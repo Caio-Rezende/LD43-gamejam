@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "199950348470",
+    "firebase_url": "https://ld43-gamejam.firebaseio.com",
+    "project_id": "ld43-gamejam",
+    "storage_bucket": "ld43-gamejam.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199950348470:android:bf9e69ae501c7ed4",
+        "android_client_info": {
+          "package_name": "com.ld43.gamejam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199950348470-38pga506ejg560lj8om4a35048n4urn3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQWORl3dmwWDCslAIyGRP90kX9-wruQZE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
