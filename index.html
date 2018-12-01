@@ -28,7 +28,15 @@
     margin: 20px;
     zoom: 0.5;
   }
+
+  textarea{
+    width: 100%;
+    height: 200px;
+  }
 </style>
+<script src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.6.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.6.0/firebase-database.js"></script>
 
 <body>
   <form name="form">
@@ -36,9 +44,6 @@
     <input type="range" name="boardSize" min="9" step="2" max="51" value="9" onchange="generator(this.value, 'board') && update()">
     <span id="boardSize">9</span>
     <br />
-    Máximo de iterações:
-    <input type="range" id="maxIterations" min="11" step="2" max="50" value="11" onchange="document.getElementById('maxIterationsOutput').innerText = this.value;">
-    <span id="maxIterationsOutput">11</span>
     <button type="button" onclick="pathFinder()">PathFind!</button>
     <br />
     <button type="button" onclick="set('purple')">Purple</button>
@@ -56,35 +61,39 @@
       <input type="radio" name="outputType" value="num" onclick="update()">
       Num
     </label>
-  </form>
-  <br />
-  <br />
-  <div id="board"></div>
-  <h4>Purple</h4>
-  <span id="purple">
-  </span>
-  <h4>Red</h4>
-  <span id="red">
-  </span>
-  <h4>Gold</h4>
-  <span id="gold">
-  </span>
-  <h4>Blue</h4>
-  <span id="blue">
-  </span>
-  <h4>Green</h4>
-  <span id="green">
-  </span>
-  <br style="clear: both" />
-  <h4>Pathfinder</h4>
-  <ol id="pathfinderOutput">
-  </ol>
+    <br />
+    <br />
+    <div id="board"></div>
+    <h4>Purple</h4>
+    <span id="purple">
+    </span>
+    <h4>Red</h4>
+    <span id="red">
+    </span>
+    <h4>Gold</h4>
+    <span id="gold">
+    </span>
+    <h4>Blue</h4>
+    <span id="blue">
+    </span>
+    <h4>Green</h4>
+    <span id="green">
+    </span>
+    <br style="clear: both" />
+    <h4>Pathfinder</h4>
+    <ol id="pathfinderOutput">
+    </ol>
+    <h4>Database</h4>
+    <textarea name="database">
+    </textarea>
+    <button type="button" onclick="updateDB()">Atualizar!</button>
+</form>
 </body>
 <script type="text/javascript">
   var curPlayer = 'purple';
   var pathsFound = [];
   var prizes = [
-    [3,4],[4,5],[5,4],[4,3]
+    [3, 4], [4, 5], [5, 4], [4, 3]
   ];
   var playersDefault = [{
     color: "purple",
@@ -140,7 +149,7 @@
         obj.className = "tile";
         obj.title = num + " (" + i + ',' + ii + ')';
         obj.id = id + "-tile-" + num;
-        obj.dataset.pos = "(" + i + ',' + ii + ')';
+        obj.dataset.pos = "[" + i + ',' + ii + ']';
         obj.dataset.num = num;
         obj.onclick = change;
         board.appendChild(obj);
@@ -210,26 +219,28 @@
   }
 
   function pathFinder() {
+    var pathFinderOutput = document.getElementById('pathfinderOutput');
+    pathFinderOutput.innerHTML = 'Processando...';
+
+    pathsFound = [];
     var boardSize = parseInt(document.forms['form'].boardSize.value, 10);
     for (var p in playersDefault) {
       var player = playersDefault[p];
       if (player.color == 'purple') continue;
 
       min = parseInt(boardSize / 2 + 2, 10);
-      max = parseInt(document.forms['form'].maxIterations.value, 10);
 
       var path = [player.pos];
-      iterateFinder(path, boardSize, min, max, 0);
+      iterateFinder(path, boardSize, min, 0);
     }
 
-    var pathFinderOutput = document.getElementById('pathfinderOutput');
     pathFinderOutput.innerHTML = '';
     for (var p in pathsFound) {
       var li = document.createElement('li');
       li.innerHTML =
-        "("
-        + pathsFound[p].join(') , (')
-        + ") <div id='board-"
+        "["
+        + pathsFound[p].join('],[')
+        + "] <div id='board-"
         + (p)
         + "'/>";
       pathFinderOutput.appendChild(li);
@@ -239,7 +250,7 @@
     }
   }
 
-  function fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration) {
+  function fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, iteration) {
     //verificando se pode descer x
     if (lastX > 0
       && (
@@ -248,11 +259,12 @@
         || ((lastX > half) && firstX > half)
       )
     ) {
-      testPos([lastX - 1, lastY], path, boardSize, min, max, iteration);
+      return testPos([lastX - 1, lastY], path, boardSize, min, iteration);
     }
+    return false;
   }
 
-  function fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration) {
+  function fnRightX(lastX, lastY, firstX, half, path, boardSize, min, iteration) {
     //verificando se pode subir x
     if (lastX < boardSize - 1
       && (
@@ -261,11 +273,12 @@
         || ((lastX > half) && firstX > half)
       )
     ) {
-      testPos([lastX + 1, lastY], path, boardSize, min, max, iteration);
+      return testPos([lastX + 1, lastY], path, boardSize, min, iteration);
     }
+    return false;
   }
 
-  function fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration) {
+  function fnTopY(lastX, lastY, firstY, half, path, boardSize, min, iteration) {
     //verificando se pode subir y
     if (lastY < boardSize - 1
       && (
@@ -274,11 +287,12 @@
         || ((lastY > half) && firstY > half)
       )
     ) {
-      testPos([lastX, lastY + 1], path, boardSize, min, max, iteration);
+      return testPos([lastX, lastY + 1], path, boardSize, min, iteration);
     }
+    return false;
   }
 
-  function fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration) {
+  function fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, iteration) {
     //verificando se pode descer y
     if (lastY > 0
       && (
@@ -287,12 +301,13 @@
         || ((lastY > half) && firstY > half)
       )
     ) {
-      testPos([lastX, lastY - 1], path, boardSize, min, max, iteration);
+      return testPos([lastX, lastY - 1], path, boardSize, min, iteration);
     }
+    return false;
   }
 
   //pathfinderOutput
-  function iterateFinder(path, boardSize, min, max, iteration) {
+  function iterateFinder(path, boardSize, min, iteration) {
     var lastPos = path[path.length - 1];
     var firstPos = path[path.length - 1];
 
@@ -302,56 +317,87 @@
     var firstX = firstPos[0];
     var firstY = firstPos[1];
 
-    //condição de parada, iterações máximas alcançadas
-    if (iteration + 1 >= max) {
-      return;
-    }
-
     var half = parseInt(boardSize / 2, 10);
 
     var rand = (new Date()).getTime() % 4;
 
-
-      switch(rand) {
-        case 0:
-        fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
-        fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
-        fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
-        fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+    switch (rand) {
+      case 0:
+        if (fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnRightX(lastX, lastY, firstX, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnTopY(lastX, lastY, firstY, half, path, boardSize, min, iteration)) {
+          return true;
+        }
         break;
-        case 1:
-        fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
-        fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
-        fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
-        fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+      case 1:
+        if (fnTopY(lastX, lastY, firstY, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnRightX(lastX, lastY, firstX, half, path, boardSize, min, iteration)) {
+          return true;
+        }
         break;
-        case 2:
-        fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
-        fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
-        fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
-        fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+      case 2:
+        if (fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnTopY(lastX, lastY, firstY, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnRightX(lastX, lastY, firstX, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, iteration)) {
+          return true;
+        }
         break;
-        case 3:
-        fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
-        fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
-        fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
-        fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+      case 3:
+        if (fnRightX(lastX, lastY, firstX, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnTopY(lastX, lastY, firstY, half, path, boardSize, min, iteration)) {
+          return true;
+        }
+        if (fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, iteration)) {
+          return true;
+        }
         break;
-      }
+    }
+    
+    var pathFinderOutput = document.getElementById('pathfinderOutput');
+    pathFinderOutput.innerHTML = 'Processando... [' + path.join('],[') + ']';
   }
 
-  function testPos(pos, path, boardSize, min, max, iteration) {
+  function testPos(pos, path, boardSize, min, iteration) {
     if (!checkInPath(path, pos) && !hasAdjacent(path, pos)) {
       path.push(pos);
       //verificando se é a vitória
       if (iteration > min && isBullsEye(path[0], pos, boardSize)) {
         var pathFound = path.map((r) => (r));
         pathsFound.push(pathFound);
-      } else {
-        console.log(path.join(', '));
+        return true;
       }
-      iterateFinder(path, boardSize, min, max, iteration + 1);
+      if (iterateFinder(path, boardSize, min, iteration + 1)) {
+        return true;
+      }
       path.pop();
+      return false;
     }
   }
 
@@ -383,7 +429,8 @@
 
     var tf = false;
     for (var p in playersDefault) {
-      if (isNaN(parseInt(p, 10)) || !p) continue;
+      var intP = parseInt(p, 10);
+      if (isNaN(intP) || !intP) continue;
       var isTopBad = (equalPath(playersDefault[p].pos, checkTop) && !equalPath(path[0], checkTop));
       var isRightBad = (equalPath(playersDefault[p].pos, checkRight) && !equalPath(path[0], checkRight));
       var isBottomBad = (equalPath(playersDefault[p].pos, checkBottom) && !equalPath(path[0], checkBottom));
@@ -398,7 +445,7 @@
   }
 
   //Verificando se pos é condição de vitória
-  function isBullsEye(first, pos, boardSize) {    
+  function isBullsEye(first, pos, boardSize) {
     var half = parseInt(boardSize / 2, 10);
     if (pos[0] == half && first[0] == half) {
       if ((pos[1] == half - 1) && (first[1] < half)) {
@@ -409,10 +456,10 @@
       }
     }
     if (pos[1] == half && first[1] == half) {
-      if ((pos[0] == half - 1) && (first[0] = half)) {
+      if ((pos[0] == half - 1) && (first[0] < half)) {
         return true;
       }
-      if ((pos[0] == half + 1) && (first[0] = half)) {
+      if ((pos[0] == half + 1) && (first[0] > half)) {
         return true;
       }
     }
@@ -440,4 +487,50 @@
   //Iniciando as gerações iniciais
   generator(9, 'board');
   update();
+
+  var updateDB = null;
+
+  document.body.onload = function () {
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBWL1Vw_xX_H_HWNYhFKWyaY17LLvRNY2I",
+      authDomain: "ld43-gamejam.firebaseapp.com",
+      databaseURL: "https://ld43-gamejam.firebaseio.com",
+      projectId: "ld43-gamejam",
+      storageBucket: "ld43-gamejam.appspot.com",
+      messagingSenderId: "199950348470"
+    };
+    firebase.initializeApp(config);
+    var defaultDatabase = firebase.database();
+
+    var ref = defaultDatabase.ref();
+    ref.on('value', function (snapshot) {
+      var database = document.forms['form'].database;
+      var val = JSON.stringify(snapshot.val());
+      database.value = val;
+    });
+    /*ref.update({
+      "paths": {
+        "description": "valid positions",
+        "matriz": [
+          [0, 0],
+          [1, 1],
+          [2, 2],
+          [3, 4]
+        ]
+      },
+      "personagemZ": {
+        "pos": [0, 0],
+        "isTurn": true
+      }
+    });*/
+    updateDB = function() {
+      try {
+        var val = document.forms['form'].database.value;
+        ref.update(JSON.parse(val));
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+  };
 </script>
