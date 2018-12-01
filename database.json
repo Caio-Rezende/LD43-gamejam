@@ -1,0 +1,23 @@
+{
+	"session-id": {
+		"open-holes" : {
+			"description" : "holes already opened",
+			"matriz" : [
+				{0,0},
+				{1,1},
+				{2,2},
+				{3,4}
+			]
+		},
+		"personagemZ" : {
+			"x" : 0,
+			"y" : 0,
+			"isTurn" : true
+		},
+		"personagemK" : {
+			"x" : 1,
+			"y" : 1,
+			"isTurn" : false
+		}
+	}
+}
