@@ -1,0 +1,151 @@
+<!Doctype html>
+<style type="text/css">
+  #board {
+    float: left;
+    margin: 30px 50px 200px;
+    width: calc(9*42px);
+  }
+
+  .tile {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+  }
+
+  p,
+  button {
+    display: inline-block;
+    vertical-align: top;
+  }
+</style>
+
+<body>
+  <form name="form">
+    <button type="button" onclick="set('purple')">Purple</button>
+    <button type="button" onclick="set('red')">Red</button>
+    <button type="button" onclick="set('gold')">Gold</button>
+    <button type="button" onclick="set('blue')">Blue</button>
+    <button type="button" onclick="set('green')">Green</button>
+    <br/>
+    <br/>
+    Output:
+    <label>
+      <input type="radio" name="outputType" value="pos" onclick="update()">
+      Pos
+    </label>
+    <label>
+      <input type="radio" name="outputType" value="num" onclick="update()">
+      Num
+    </label>
+  </form>
+  <br/>
+  <br/>
+  <div id="board"></div>
+  <h4>Purple</h4>
+  <span id="purple">
+  </span>
+  <h4>Red</h4>
+  <span id="red">
+  </span>
+  <h4>Gold</h4>
+  <span id="gold">
+  </span>
+  <h4>Blue</h4>
+  <span id="blue">
+  </span>
+  <h4>Green</h4>
+  <span id="green">
+  </span>
+</body>
+<script type="text/javascript">
+  var players = [{
+    color: "red",
+    pos: [0, 4]
+  }, {
+    color: "blue",
+    pos: [4, 0]
+  }, {
+    color: "green",
+    pos: [4, 8]
+  }, {
+    color: "gold",
+    pos: [8, 4]
+  }];
+
+  var body = document.getElementById('board');
+  for (var i = 0; i < 9; i++) {
+    for (var ii = 0; ii < 9; ii++) {
+      var num = i + ii * 9;
+      var obj = document.createElement('tile');
+      if (num % 2) {
+        obj.style.backgroundColor = 'black';
+      } else {
+        obj.style.backgroundColor = 'white';
+      }
+      if (num == 40) {
+        obj.style.backgroundColor = "purple";
+      }
+      obj.className = "tile";
+      obj.title = num + " (" + i + ',' + ii + ')';
+      obj.id = "tile-" + num;
+      obj.dataset.pos = "(" + i + ',' + ii + ')';
+      obj.dataset.num = num;
+      obj.onclick = change;
+      body.appendChild(obj);
+    }
+  }
+
+  for (var p = 0; p < players.length; p++) {
+    var player = players[p];
+    var pos = player.pos;
+    var num = pos[0] + pos[1] * 9;
+    var pTile = document.getElementById("tile-" + num);
+    pTile.style.backgroundColor = player.color;
+  }
+
+  var curPlayer = 'purple';
+  function set(color) {
+    curPlayer = color;
+  }
+
+  function change() {
+    if (this && this.style) {
+      if (this.style.backgroundColor != curPlayer) {
+        if (!this.dataset.prevStyle) {
+          this.dataset.prevStyle = this.style.backgroundColor;
+        }
+        this.style.backgroundColor = curPlayer;
+      } else {
+        this.style.backgroundColor = this.dataset.prevStyle;
+      }
+    }
+    update();
+  }
+
+  function update() {
+    var text = [];
+    var tiles = document.getElementsByTagName('tile');
+    var outputType = (document.forms['form'] && document.forms['form'].outputType.value)
+     ? document.forms['form'].outputType.value
+     : 'pos';
+
+    for (tile in tiles) {
+      if (tiles[tile] && tiles[tile].style && tiles[tile].style.backgroundColor) {
+        var color = tiles[tile].style.backgroundColor;
+        if (!text[color]) {
+          text[color] = [];
+        }
+        text[color].push(tiles[tile].dataset[outputType]);
+      }
+    }
+
+    for (var color in text) {
+      var p = document.getElementById(color);
+      if (p) {
+        p.innerText = text[color].join(', ')
+      }
+    }
+  }
+  update();
+</script>
