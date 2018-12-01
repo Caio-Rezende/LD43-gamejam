@@ -39,7 +39,7 @@ public class BlockController : MonoBehaviour {
             if (hasPlayer && !isSolidBlock)
             {
                 fall = true;
-                gameObject.GetComponent<Rigidbody>().useGravity = true;
+                gameObject.GetComponent<Rigidbody>().isKinematic = false;
             }
         }
     }
@@ -48,7 +48,7 @@ public class BlockController : MonoBehaviour {
     {
         if (fall)
         {
-            if (gameObject.GetComponent<Transform>().position.y < -30)
+            if (gameObject.GetComponent<Transform>().position.y < -10)
             {
                 Destroy(gameObject);
             }
