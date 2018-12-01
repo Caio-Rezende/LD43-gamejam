@@ -2,7 +2,7 @@
 <style type="text/css">
   #board {
     float: left;
-    margin: 30px 50px 200px;
+    margin: 20px 50px;
     width: calc(9*42px);
   }
 
@@ -18,21 +18,35 @@
     display: inline-block;
     vertical-align: top;
   }
+
+  form {
+    vertical-align: middle;
+  }
+
+  li {
+    display: inline-block;
+    margin: 20px;
+    zoom: 0.5;
+  }
 </style>
 
 <body>
   <form name="form">
     Board size:
-    <input type="range" name="size" min="9" step="2" max="21" value="9"
-      onchange="generator(this.value) && update()">
+    <input type="range" name="boardSize" min="9" step="2" max="21" value="9" onchange="generator(this.value, 'board') && update()">
     <span id="boardSize">9</span>
-    <br/>
+    <br />
+    Máximo de iterações:
+    <input type="range" id="maxIterations" min="11" step="2" max="50" value="11" onchange="document.getElementById('maxIterationsOutput').innerText = this.value;">
+    <span id="maxIterationsOutput">11</span>
+    <button type="button" onclick="pathFinder()">PathFind!</button>
+    <br />
     <button type="button" onclick="set('purple')">Purple</button>
     <button type="button" onclick="set('red')">Red</button>
     <button type="button" onclick="set('gold')">Gold</button>
     <button type="button" onclick="set('blue')">Blue</button>
     <button type="button" onclick="set('green')">Green</button>
-    <br/>
+    <br />
     Output:
     <label>
       <input type="radio" name="outputType" value="pos" onclick="update()">
@@ -43,8 +57,8 @@
       Num
     </label>
   </form>
-  <br/>
-  <br/>
+  <br />
+  <br />
   <div id="board"></div>
   <h4>Purple</h4>
   <span id="purple">
@@ -61,8 +75,17 @@
   <h4>Green</h4>
   <span id="green">
   </span>
+  <br style="clear: both" />
+  <h4>Pathfinder</h4>
+  <ol id="pathfinderOutput">
+  </ol>
 </body>
 <script type="text/javascript">
+  var curPlayer = 'purple';
+  var pathsFound = [];
+  var prizes = [
+    [3,4],[4,5],[5,4],[4,3]
+  ];
   var playersDefault = [{
     color: "purple",
     pos: [4, 4]
@@ -81,21 +104,28 @@
   }];
 
   //Seed inicial gerando o board
-  function generator(size) {
+  function generator(size, id) {
     //Imprimindo tamanho selecionado
     var boardSize = document.getElementById('boardSize');
     boardSize.innerText = size;
 
-    var half = parseInt(size/2, 10)
+    //posições iniciais de cada cor
+    var half = parseInt(size / 2, 10)
     playersDefault[0].pos = [half, half];
     playersDefault[1].pos = [0, half];
     playersDefault[2].pos = [half, 0];
     playersDefault[3].pos = [half, half * 2];
     playersDefault[4].pos = [half * 2, half];
 
+    prizes[0] = [half - 1, half];
+    prizes[1] = [half + 1, half];
+    prizes[2] = [half, half - 1];
+    prizes[3] = [half, half + 1];
+
     var players = playersDefault;
-    
-    var board = document.getElementById('board');
+
+    //gerando os quadrados pretos ebrancos
+    var board = document.getElementById(id);
     board.innerHTML = '';
     board.style.width = 'calc(' + size + '*42px)';
     for (var i = 0; i < size; i++) {
@@ -109,7 +139,7 @@
         }
         obj.className = "tile";
         obj.title = num + " (" + i + ',' + ii + ')';
-        obj.id = "tile-" + num;
+        obj.id = id + "-tile-" + num;
         obj.dataset.pos = "(" + i + ',' + ii + ')';
         obj.dataset.num = num;
         obj.onclick = change;
@@ -117,11 +147,12 @@
       }
     }
 
+    //dando as primeiras cores aos quadrados
     for (var p = 0; p < players.length; p++) {
       var player = players[p];
       var pos = player.pos;
       var num = pos[0] + pos[1] * size;
-      var pTile = document.getElementById("tile-" + num);
+      var pTile = document.getElementById(id + "-tile-" + num);
       pTile.style.backgroundColor = player.color;
     }
 
@@ -129,10 +160,10 @@
   }
 
   //Seleciona cor do click
-  var curPlayer = 'purple';
   function set(color) {
     curPlayer = color;
   }
+
   //Aplica o click no tile para (des)pintar
   function change() {
     if (this && this.style) {
@@ -147,14 +178,16 @@
     }
     update();
   }
+
   //Gera os caminhos de cada cor
   function update() {
     var text = [];
     var tiles = document.getElementsByTagName('tile');
     var outputType = (document.forms['form'] && document.forms['form'].outputType.value)
-     ? document.forms['form'].outputType.value
-     : 'pos';
+      ? document.forms['form'].outputType.value
+      : 'pos';
 
+    //verificando quais cores estão em cada quadrado
     for (tile in tiles) {
       if (tiles[tile] && tiles[tile].style && tiles[tile].style.backgroundColor) {
         var color = tiles[tile].style.backgroundColor;
@@ -165,6 +198,7 @@
       }
     }
 
+    //imprimindo a lista de posições por cor
     for (var color in text) {
       var p = document.getElementById(color);
       if (p) {
@@ -175,6 +209,235 @@
     return true;
   }
 
-  generator(9);
+  function pathFinder() {
+    var boardSize = parseInt(document.forms['form'].boardSize.value, 10);
+    for (var p in playersDefault) {
+      var player = playersDefault[p];
+      if (player.color == 'purple') continue;
+
+      min = parseInt(boardSize / 2 + 2, 10);
+      max = parseInt(document.forms['form'].maxIterations.value, 10);
+
+      var path = [player.pos];
+      iterateFinder(path, boardSize, min, max, 0);
+    }
+
+    var pathFinderOutput = document.getElementById('pathfinderOutput');
+    pathFinderOutput.innerHTML = '';
+    for (var p in pathsFound) {
+      var li = document.createElement('li');
+      li.innerHTML =
+        "("
+        + pathsFound[p].join(') , (')
+        + ") <div id='board-"
+        + (p)
+        + "'/>";
+      pathFinderOutput.appendChild(li);
+      if (isNaN(parseInt(pathsFound[p], 10))) continue;
+      generator(boardSize, 'board-' + p);
+      displayPath(p + '-', pathsFound[p]);
+    }
+  }
+
+  function fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration) {
+    //verificando se pode descer x
+    if (lastX > 0
+      && (
+        firstX == half
+        || ((lastX - 1 < half) && firstX < half)
+        || ((lastX > half) && firstX > half)
+      )
+    ) {
+      testPos([lastX - 1, lastY], path, boardSize, min, max, iteration);
+    }
+  }
+
+  function fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration) {
+    //verificando se pode subir x
+    if (lastX < boardSize - 1
+      && (
+        firstX == half
+        || ((lastX + 1 < half) && firstX < half)
+        || ((lastX > half) && firstX > half)
+      )
+    ) {
+      testPos([lastX + 1, lastY], path, boardSize, min, max, iteration);
+    }
+  }
+
+  function fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration) {
+    //verificando se pode subir y
+    if (lastY < boardSize - 1
+      && (
+        firstY == half
+        || ((lastY + 1 < half) && firstY < half)
+        || ((lastY > half) && firstY > half)
+      )
+    ) {
+      testPos([lastX, lastY + 1], path, boardSize, min, max, iteration);
+    }
+  }
+
+  function fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration) {
+    //verificando se pode descer y
+    if (lastY > 0
+      && (
+        firstY == half
+        || ((lastY - 1 < half) && firstY < half)
+        || ((lastY > half) && firstY > half)
+      )
+    ) {
+      testPos([lastX, lastY - 1], path, boardSize, min, max, iteration);
+    }
+  }
+
+  //pathfinderOutput
+  function iterateFinder(path, boardSize, min, max, iteration) {
+    var lastPos = path[path.length - 1];
+    var firstPos = path[path.length - 1];
+
+    var lastX = lastPos[0];
+    var lastY = lastPos[1];
+
+    var firstX = firstPos[0];
+    var firstY = firstPos[1];
+
+    //condição de parada, iterações máximas alcançadas
+    if (iteration + 1 >= max) {
+      return;
+    }
+
+    var half = parseInt(boardSize / 2, 10);
+
+    var rand = (new Date()).getTime() % 4;
+
+
+      switch(rand) {
+        case 0:
+        fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+        fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+        fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+        fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+        break;
+        case 1:
+        fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+        fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+        fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+        fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+        break;
+        case 2:
+        fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+        fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+        fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+        fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+        break;
+        case 3:
+        fnRightX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+        fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, max, iteration);
+        fnTopY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+        fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, max, iteration);
+        break;
+      }
+  }
+
+  function testPos(pos, path, boardSize, min, max, iteration) {
+    if (!checkInPath(path, pos) && !hasAdjacent(path, pos)) {
+      path.push(pos);
+      //verificando se é a vitória
+      if (iteration > min && isBullsEye(path[0], pos, boardSize)) {
+        var pathFound = path.map((r) => (r));
+        pathsFound.push(pathFound);
+      } else {
+        console.log(path.join(', '));
+      }
+      iterateFinder(path, boardSize, min, max, iteration + 1);
+      path.pop();
+    }
+  }
+
+  //Verificando se pos já existe em path
+  function checkInPath(path, pos) {
+    for (var p in path) {
+      if (path[p][0] == pos[0] && path[p][1] == pos[1]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function equalPath(p1, p2) {
+    return p1[0] == p2[0] && p1[1] == p2[1];
+  }
+
+  //Verificando se tem adjacente
+  function hasAdjacent(path, pos) {
+    var checkTop = [pos[0], pos[1] - 1];
+    var checkRight = [pos[0] + 1, pos[1]];
+    var checkBottom = [pos[0], pos[1] + 1];
+    var checkLeft = [pos[0] - 1, pos[1]];
+
+    var isTopAdjacent = (!equalPath(path[path.length - 1], checkTop) && checkInPath(path, checkTop));
+    var isRightAdjacent = (!equalPath(path[path.length - 1], checkRight) && checkInPath(path, checkRight));
+    var isBottomAdjacent = (!equalPath(path[path.length - 1], checkBottom) && checkInPath(path, checkBottom));
+    var isLeftAdjacent = (!equalPath(path[path.length - 1], checkLeft) && checkInPath(path, checkLeft));
+
+    var tf = false;
+    for (var p in playersDefault) {
+      if (isNaN(parseInt(p, 10)) || !p) continue;
+      var isTopBad = (equalPath(playersDefault[p].pos, checkTop) && !equalPath(path[0], checkTop));
+      var isRightBad = (equalPath(playersDefault[p].pos, checkRight) && !equalPath(path[0], checkRight));
+      var isBottomBad = (equalPath(playersDefault[p].pos, checkBottom) && !equalPath(path[0], checkBottom));
+      var isLeftBad = (equalPath(playersDefault[p].pos, checkLeft) && !equalPath(path[0], checkLeft));
+      tf = tf || isTopBad || isRightBad || isBottomBad || isLeftBad;
+    }
+
+    if (isTopAdjacent || isRightAdjacent || isBottomAdjacent || isLeftAdjacent || tf) {
+      return true;
+    }
+    return false;
+  }
+
+  //Verificando se pos é condição de vitória
+  function isBullsEye(first, pos, boardSize) {    
+    var half = parseInt(boardSize / 2, 10);
+    if (pos[0] == half && first[0] == half) {
+      if ((pos[1] == half - 1) && (first[1] < half)) {
+        return true;
+      }
+      if ((pos[1] == half + 1) && (first[1] > half)) {
+        return true;
+      }
+    }
+    if (pos[1] == half && first[1] == half) {
+      if ((pos[0] == half - 1) && (first[0] = half)) {
+        return true;
+      }
+      if ((pos[0] == half + 1) && (first[0] = half)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function displayPath(id, path) {
+    var color = 'purple';
+    var firstPath = path[0];
+    for (var p in playersDefault) {
+      var player = playersDefault[p];
+      if (firstPath[0] == player.pos[0] && firstPath[1] == player.pos[1]) {
+        color = playersDefault[p].color;
+        break;
+      }
+    }
+
+    var boardSize = parseInt(document.forms['form'].boardSize.value, 10);
+    for (var pos in path) {
+      var tile = document.getElementById("board-" + id + "tile-" + (path[pos][0] + path[pos][1] * boardSize));
+      tile.style.backgroundColor = color;
+    }
+  }
+
+  //Iniciando as gerações iniciais
+  generator(9, 'board');
   update();
 </script>
