@@ -22,12 +22,16 @@
 
 <body>
   <form name="form">
+    Board size:
+    <input type="range" name="size" min="9" step="2" max="21" value="9"
+      onchange="generator(this.value) && update()">
+    <span id="boardSize">9</span>
+    <br/>
     <button type="button" onclick="set('purple')">Purple</button>
     <button type="button" onclick="set('red')">Red</button>
     <button type="button" onclick="set('gold')">Gold</button>
     <button type="button" onclick="set('blue')">Blue</button>
     <button type="button" onclick="set('green')">Green</button>
-    <br/>
     <br/>
     Output:
     <label>
@@ -59,7 +63,10 @@
   </span>
 </body>
 <script type="text/javascript">
-  var players = [{
+  var playersDefault = [{
+    color: "purple",
+    pos: [4, 4]
+  }, {
     color: "red",
     pos: [0, 4]
   }, {
@@ -73,42 +80,60 @@
     pos: [8, 4]
   }];
 
-  var body = document.getElementById('board');
-  for (var i = 0; i < 9; i++) {
-    for (var ii = 0; ii < 9; ii++) {
-      var num = i + ii * 9;
-      var obj = document.createElement('tile');
-      if (num % 2) {
-        obj.style.backgroundColor = 'black';
-      } else {
-        obj.style.backgroundColor = 'white';
+  //Seed inicial gerando o board
+  function generator(size) {
+    //Imprimindo tamanho selecionado
+    var boardSize = document.getElementById('boardSize');
+    boardSize.innerText = size;
+
+    var half = parseInt(size/2, 10)
+    playersDefault[0].pos = [half, half];
+    playersDefault[1].pos = [0, half];
+    playersDefault[2].pos = [half, 0];
+    playersDefault[3].pos = [half, half * 2];
+    playersDefault[4].pos = [half * 2, half];
+
+    var players = playersDefault;
+    
+    var board = document.getElementById('board');
+    board.innerHTML = '';
+    board.style.width = 'calc(' + size + '*42px)';
+    for (var i = 0; i < size; i++) {
+      for (var ii = 0; ii < size; ii++) {
+        var num = i + ii * size;
+        var obj = document.createElement('tile');
+        if (num % 2) {
+          obj.style.backgroundColor = 'black';
+        } else {
+          obj.style.backgroundColor = 'white';
+        }
+        obj.className = "tile";
+        obj.title = num + " (" + i + ',' + ii + ')';
+        obj.id = "tile-" + num;
+        obj.dataset.pos = "(" + i + ',' + ii + ')';
+        obj.dataset.num = num;
+        obj.onclick = change;
+        board.appendChild(obj);
       }
-      if (num == 40) {
-        obj.style.backgroundColor = "purple";
-      }
-      obj.className = "tile";
-      obj.title = num + " (" + i + ',' + ii + ')';
-      obj.id = "tile-" + num;
-      obj.dataset.pos = "(" + i + ',' + ii + ')';
-      obj.dataset.num = num;
-      obj.onclick = change;
-      body.appendChild(obj);
     }
+
+    for (var p = 0; p < players.length; p++) {
+      var player = players[p];
+      var pos = player.pos;
+      var num = pos[0] + pos[1] * size;
+      var pTile = document.getElementById("tile-" + num);
+      pTile.style.backgroundColor = player.color;
+    }
+
+    return true;
   }
 
-  for (var p = 0; p < players.length; p++) {
-    var player = players[p];
-    var pos = player.pos;
-    var num = pos[0] + pos[1] * 9;
-    var pTile = document.getElementById("tile-" + num);
-    pTile.style.backgroundColor = player.color;
-  }
-
+  //Seleciona cor do click
   var curPlayer = 'purple';
   function set(color) {
     curPlayer = color;
   }
-
+  //Aplica o click no tile para (des)pintar
   function change() {
     if (this && this.style) {
       if (this.style.backgroundColor != curPlayer) {
@@ -122,7 +147,7 @@
     }
     update();
   }
-
+  //Gera os caminhos de cada cor
   function update() {
     var text = [];
     var tiles = document.getElementsByTagName('tile');
@@ -146,6 +171,10 @@
         p.innerText = text[color].join(', ')
       }
     }
+
+    return true;
   }
+
+  generator(9);
   update();
 </script>
