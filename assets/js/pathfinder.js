@@ -171,7 +171,9 @@ function iterateFinder(path, boardSize, min, iteration) {
   }
 
   var pathFinderOutput = document.getElementById('pathfinderOutput');
-  pathFinderOutput.innerHTML = 'Processando... [' + path.join('],[') + ']';
+  if (pathFinderOutput) {
+    pathFinderOutput.innerHTML = 'Processando... [' + path.join('],[') + ']';
+  }
 }
 
 function testPos(pos, path, boardSize, min, iteration) {
@@ -270,7 +272,9 @@ function displayPath(id, path) {
   var boardSize = parseInt(document.forms['form'].boardSize.value, 10);
   for (var pos in path) {
     var tile = document.getElementById("board-" + id + "tile-" + (path[pos][0] + path[pos][1] * boardSize));
-    tile.style.backgroundColor = color;
+    if (tile) {
+      tile.style.backgroundColor = color;
+    }
   }
 }
 
@@ -284,5 +288,7 @@ function changeBoardSize() {
   var boardSize = parseInt(document.forms['form'].boardSize.value, 10);
   //Imprimindo tamanho selecionado
   var boardSizeOutput = document.getElementById('boardSizeOutput');
-  boardSizeOutput.innerText = boardSize;
+  if (boardSizeOutput) {
+    boardSizeOutput.innerText = boardSize;
+  }
 }
