@@ -355,14 +355,14 @@ function updateTurnPlayerInfo() {
   var turnPlayerInfo = document.getElementById('turnPlayerInfo');
   if (turnPlayerInfo) {
     turnPlayerInfo.style.color = player.color;
-    var msg = '';
+    var msg = '[' + sessionName + '] ';
     if (!gameStart) {
-      msg = 'Waiting players to connect (' + players.length + '/4)';
+      msg += 'Waiting players to connect (' + players.length + '/4)';
     } else {
       if (endState) {
-        msg = 'Turn: ' + (turn + 1) + ', WINNER: ' + player.name + '!!!';
+        msg += 'Turn: ' + (turn + 1) + ', WINNER: ' + player.name + '!!!';
       } else {
-        msg = 'Turn: ' + (turn + 1) + ', Player: ' + player.name;
+        msg += 'Turn: ' + (turn + 1) + ', Player: ' + player.name;
       }
     }
     if (visitors.length > 0) {
