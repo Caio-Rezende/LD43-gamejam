@@ -185,13 +185,16 @@ function checkWinCondition(player) {
 function updateTurnPlayerInfo() {
   var player = players[curPlayer];
   var turnPlayerInfo = document.getElementById('turnPlayerInfo');
-  var msg = '';
-  if (endState) {
-    msg = 'Turn: ' + (turn + 1) + ', WINNER: ' + player.color + '!!!';
-  } else {
-    msg = 'Turn: ' + (turn + 1) + ', Color: ' + player.color;
+  if (turnPlayerInfo) {
+    turnPlayerInfo.style.color = player.color;
+    var msg = '';
+    if (endState) {
+      msg = 'Turn: ' + (turn + 1) + ', WINNER: ' + player.color + '!!!';
+    } else {
+      msg = 'Turn: ' + (turn + 1) + ', Color: ' + player.color;
+    }
+    turnPlayerInfo.innerText = msg;
   }
-  turnPlayerInfo.innerText = msg;
 }
 
 function gameCycle (evt) {

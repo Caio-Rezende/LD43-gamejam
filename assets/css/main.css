@@ -1,53 +1,59 @@
-  #board {
-    float: left;
-    margin: 20px 50px;
-    width: calc(9*42px);
-  }
+body {
+  margin: 40px;
+  text-align: center;
+  padding-bottom: 50px;
+}
 
-  .tile {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    border: 1px solid black;
-  }
+#board {
+  display: inline-block;
+  margin: 20px 50px;
+  width: calc(9*42px);
+}
 
-  p,
-  button {
-    display: inline-block;
-    vertical-align: top;
-  }
+.tile {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+}
 
-  form {
-    vertical-align: middle;
-  }
+p,
+button {
+  display: inline-block;
+  vertical-align: top;
+}
 
-  li {
-    display: inline-block;
-    margin: 20px;
-    zoom: 0.5;
-    font-size: 1.5em;
-  }
+form {
+  vertical-align: middle;
+}
 
-  textarea{
-    width: 100%;
-    height: 200px;
-  }
+li {
+  display: inline-block;
+  margin: 20px;
+  zoom: 0.5;
+  font-size: 1.5em;
+}
 
-  nav {
-    display: block;
-    position: fixed;
-    bottom: 0;
-    background-color: black;
-    width: 100%;
-    left: 0;
-  }
+textarea{
+  width: 100%;
+  height: 200px;
+}
 
-  nav a, nav a:hover, nav a:active {
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
-  }
+nav {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  background-color: black;
+  width: 100%;
+  left: 0;
+}
 
-  nav a:hover{
-    text-decoration: underline;
-  }
+nav a, nav a:hover, nav a:active {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+nav a:hover{
+  text-decoration: underline;
+}

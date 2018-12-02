@@ -1,0 +1,34 @@
+<!Doctype html>
+<meta charset="utf-8">
+<link type="text/css" href="../assets/css/main.css" rel="stylesheet" />
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.6.0/firebase-app.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.6.0/firebase-database.js"></script>
+<script type="text/javascript" src="../assets/js/playersDefault.js"></script>
+<script type="text/javascript" src="../assets/js/board.js"></script>
+<script type="text/javascript" src="../assets/js/pathfinder.js"></script>
+<script type="text/javascript" src="../assets/js/multiplayer.js"></script>
+
+<body>
+  <form name="player">
+    Choose a session:
+    <input type="text" name="session" onchange="setSession(this.value)">
+    <br />
+    Inform your player name:
+    <input type="text" name="name" onchange="setPlayer(this.value)" disabled="true">
+  </form>
+  <div id="inGame" style="display: none">
+    <h1 title="(s,d,f,e) ou (&LeftArrow;,&DownArrow;,&RightArrow;,&UpArrow;)">Use your keyboard*</h1>
+    <h2 id="playerInfo"></h2>
+    <h2 id="turnPlayerInfo"></h2>
+    <br />
+    <div id="board"></div>
+  </div>
+  <br style="clear: both" />
+  <nav>
+    <li><a href="database.html">Database</a></li>
+    <li><a href="pathfinder.html">Pathfinder</a></li>
+    <li><a href="sandbox.html">Sandbox</a></li>
+    <li><a href="../index.html">Home</a></li>
+  </nav>
+</body>

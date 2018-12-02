@@ -1,5 +1,3 @@
-var updateDB = null;
-
 // Initialize Firebase
 var config = {
   apiKey: "AIzaSyBWL1Vw_xX_H_HWNYhFKWyaY17LLvRNY2I",
@@ -18,7 +16,8 @@ ref.on('value', function (snapshot) {
   var val = JSON.stringify(snapshot.val());
   database.value = val;
 });
-updateDB = function () {
+
+function updateDB() {
   try {
     var val = document.forms['form'].database.value;
     ref.update(JSON.parse(val));

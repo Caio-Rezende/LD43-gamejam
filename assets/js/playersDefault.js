@@ -15,6 +15,7 @@ var playersDefault = [{
   pos: [4, 0]
 }];
 
+var playersColors = ['red', 'blue', 'green', 'purple'];
 function updatePlayersDefault(size) {
   //posições iniciais de cada cor
   var half = parseInt(size / 2, 10)
