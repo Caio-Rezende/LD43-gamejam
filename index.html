@@ -2,51 +2,24 @@
 <link type="text/css" href="assets/css/main.css" rel="stylesheet" />
 <script type="text/javascript" src="assets/js/playersDefault.js"></script>
 <script type="text/javascript" src="assets/js/board.js"></script>
+<script type="text/javascript" src="assets/js/pathfinder.js"></script>
 <script type="text/javascript" src="assets/js/gameplay.js"></script>
 
 <body>
   <form name="form">
     Board size:
-    <input type="range" name="boardSize" min="9" step="2" max="51" value="9" onchange="gameSet(this.value, 'board') && update()">
+    <input type="range" name="boardSize" min="9" step="2" max="51" value="9" onchange="gameSet(this.value, 'board')">
     <span id="boardSizeOutput">9</span>
-    <br />
-    <button type="button" onclick="setPlayer(0)">Gold</button>
-    <button type="button" onclick="setPlayer(1)">Red</button>
-    <button type="button" onclick="setPlayer(2)">Blue</button>
-    <button type="button" onclick="setPlayer(3)">Green</button>
-    <button type="button" onclick="setPlayer(4)">Purple</button>
-    <br />
-    Output:
-    <label>
-      <input type="radio" name="outputType" value="pos" onclick="update()">
-      Pos
-    </label>
-    <label>
-      <input type="radio" name="outputType" value="num" onclick="update()">
-      Num
-    </label>
   </form>
   <br />
+  <h1 title="(s,d,f,e) ou (&LeftArrow;,&DownArrow;,&RightArrow;,&UpArrow;)">Use your keyboard*</h1>
+  <h2 id="turnPlayerInfo"></h2>
   <br />
   <div id="board"></div>
-  <h4>Purple</h4>
-  <span id="purple">
-  </span>
-  <h4>Red</h4>
-  <span id="red">
-  </span>
-  <h4>Gold</h4>
-  <span id="gold">
-  </span>
-  <h4>Blue</h4>
-  <span id="blue">
-  </span>
-  <h4>Green</h4>
-  <span id="green">
-  </span>
   <br style="clear: both" />
   <nav>
     <li><a href="pages/database.html">Database</a></li>
     <li><a href="pages/pathfinder.html">Pathfinder</a></li>
+    <li><a href="pages/sandbox.html">Sandbox</a></li>
   </nav>
 </body>
