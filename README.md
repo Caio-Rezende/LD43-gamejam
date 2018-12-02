@@ -3,6 +3,8 @@ Gamejam LD 43
 
 Equipe: Caio Rezende, Gustavo Christino, Sammy Azar, Thiago Bastos, Thiago Pereira
 
+This project has an html 2d simulator in ./public and the unity 3d game in ./Maze...
+
 Unity
 - Cenário (tiles)
 	- [x] 9x9
