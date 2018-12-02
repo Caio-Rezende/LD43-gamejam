@@ -1,0 +1,23 @@
+<!Doctype html>
+<link type="text/css" href="../assets/css/main.css" rel="stylesheet" />
+<script type="text/javascript" src="../assets/js/playersDefault.js"></script>
+<script type="text/javascript" src="../assets/js/board.js"></script>
+<script type="text/javascript" src="../assets/js/pathfinder.js"></script>
+
+<body>
+  <form name="form">
+    Board size:
+    <input type="range" name="boardSize" min="9" step="2" max="51" value="9" onchange="changeBoardSize(this.value)">
+    <span id="boardSizeOutput">9</span>
+    <br />
+    <button type="button" onclick="onClickPathFind()">PathFind!</button>
+  </form>
+  <br />
+  <h4>Pathfinder</h4>
+  <ol id="pathfinderOutput">
+  </ol>
+  <nav>
+    <li><a href="database.html">Database</a></li>
+    <li><a href="../index.html">Home</a></li>
+  </nav>
+</body>
