@@ -25,7 +25,7 @@ Unity
 
 - Som/Música
 	- [ ] 3 tipos de som por personagem (total 12)
-	- [ ] Música de fundo (peruana, flauta). Pelo menos dois ritmos (calmo e frenético)
+	- [x] Música de fundo (peruana, flauta). Pelo menos dois ritmos (calmo e frenético)
 	- [ ] Som de sucesso
 	- [ ] Som de atenção (quando é a vez do jogador)
 	
