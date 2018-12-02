@@ -3,6 +3,8 @@ Gamejam LD 43
 
 Equipe: Caio Rezende, Gustavo Christino, Sammy Azar, Thiago Bastos, Thiago Pereira
 
+This project has an html 2d simulator in ./public and the unity 3d game in ./Maze...
+
 Unity
 - Cenário (tiles)
 	- [x] 9x9
@@ -25,7 +27,7 @@ Unity
 
 - Som/Música
 	- [ ] 3 tipos de som por personagem (total 12)
-	- [ ] Música de fundo (peruana, flauta). Pelo menos dois ritmos (calmo e frenético)
+	- [x] Música de fundo (peruana, flauta). Pelo menos dois ritmos (calmo e frenético)
 	- [ ] Som de sucesso
 	- [ ] Som de atenção (quando é a vez do jogador)
 	
