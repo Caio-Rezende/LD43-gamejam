@@ -22,6 +22,7 @@ var ref = null;
 var sessionName = false;
 var gameStart = false;
 var thisPlayer = null;
+var visitors = [];
 
 var prize = null;
 var initialPositions = [];
@@ -44,28 +45,37 @@ function setSession(val) {
           turn: 0,
           players : players,
           initialPositions: initialPositions,
-          truthPositions : truthPositions
+          truthPositions : truthPositions,
+          endState : false
         });
+      } else {
+        updateConfig(snapshot.val());
       }
+
+      sessionName = val;
       document.forms['player'].name.disabled = false;
 
       ref.child(val).on('value', (snapshot) => {
-        var config = snapshot.val();
-        sessionName = val;
-        boardSize = config.size;
-        turn = config.turn;
-        players = config.players;
-        initialPositions = config.initialPositions;
-        truthPositions = config.truthPositions;
-        holes = config.holes ? config.holes : [];
-
-        checkGameStart();
-      })
+        updateConfig(snapshot.val());
+      });
     });
   }
 }
 
+function updateConfig (config) {
+  boardSize = config.size;
+  turn = config.turn;
+  players = config.players;
+  initialPositions = config.initialPositions;
+  truthPositions = config.truthPositions;
+  visitors = config.visitors ? config.visitors : [];
+  holes = config.holes ? config.holes : [];
+  endState = config.endState;
+  checkGameStart();
+}
+
 function checkGameStart() {
+  var allNames = JSON.parse(JSON.stringify(visitors));
   if (players && players.length == 4) {
     document.getElementById('board').innerHTML = '';
     createBoard('board', boardSize);
@@ -75,6 +85,7 @@ function checkGameStart() {
     prize = [half, half];
     for (var p in players) {
       if (isNaN(parseInt(p, 10))) continue;
+      allNames.push(players[p].name);
       if (!players[p].initialPos) {
         players[p].initialPos = [initialPositions[p][0], initialPositions[p][1]];
       }
@@ -91,6 +102,11 @@ function checkGameStart() {
     gameStart = true;
   }
   updateTurnPlayerInfo();
+
+  var participants = document.getElementById('participants');
+  if (participants) {
+    participants.innerText = allNames.join(', ');
+  }
 }
 
 function setPlayer(val) {
@@ -120,6 +136,16 @@ function setPlayer(val) {
     players.push(thisPlayer);
     ref.child(sessionName).child('players').update(players);
     displayPlayerInfo();
+  } else {
+    thisPlayer = {
+      id: -1,
+      name: val,
+      color: 'silver'
+    };
+    displayPlayerInfo();
+    thisPlayer = null;
+    visitors.push(val);
+    ref.child(sessionName).update({visitors: visitors});
   }
 }
 
@@ -129,7 +155,11 @@ function displayPlayerInfo () {
   var playerInfo = document.getElementById('playerInfo');
   if (playerInfo) {
     playerInfo.style.backgroundColor = thisPlayer.color;
-    playerInfo.innerText = thisPlayer.name + ', you are the ' + thisPlayer.color;
+    if (thisPlayer.id >= 0) {
+      playerInfo.innerText = thisPlayer.name + ', you are the ' + thisPlayer.color
+    } else {
+      playerInfo.innerText = thisPlayer.name + ', you are a visitor'
+    }
   }
 }
 
@@ -309,6 +339,9 @@ function updateTurnPlayerInfo() {
         msg = 'Turn: ' + (turn + 1) + ', Color: ' + player.color;
       }
     }
+    if (visitors.length > 0) {
+      msg += ' (visitors: ' + visitors.length + ')';
+    }
     turnPlayerInfo.innerHTML = msg;
   }
 }
@@ -322,6 +355,9 @@ function gameCycle (evt) {
   if (makeMove(evt, player)) {
     if (checkCurPos(player)) {
       if (checkWinCondition(player)) {
+        ref.child(sessionName).update({
+          players : players
+        });
         return;
       }
     }
