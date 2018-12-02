@@ -29,19 +29,11 @@ function createFoundPaths (boardSize) {
 
   pathFinderOutput.innerHTML = '';
   for (var p in pathsFound) {
-    var li = document.createElement('li');
-    li.innerHTML =
-      "["
-      + pathsFound[p].join('],[')
-      + "] <div id='board-"
-      + (p)
-      + "'/>";
-    pathFinderOutput.appendChild(li);
-    if (isNaN(parseInt(pathsFound[p], 10))) continue;
-    createBoard('board-' + p, boardSize);
-    displayPath(p + '-', pathsFound[p]);
+    for (var pos in pathsFound[p]) {
+      var num = (pathsFound[pos][0] + pathsFound[pos][1] * boardSize);
+      allMap[num] = true;
+    }
   }
-  pathFinderOutput.innerHTML = '';
 
   var li = document.createElement('li');
   pathFinderOutput.appendChild(li);
@@ -257,28 +249,6 @@ function isBullsEye(first, pos, boardSize) {
     return true;
   }
   return false;
-}
-
-function displayPath(id, path) {
-  var color = '';
-  var firstPath = path[0];
-  for (var p in playersDefault) {
-    var player = playersDefault[p];
-    if (firstPath[0] == player.pos[0] && firstPath[1] == player.pos[1]) {
-      color = playersDefault[p].color;
-      break;
-    }
-  }
-
-  var boardSize = parseInt(document.forms['form'].boardSize.value, 10);
-  for (var pos in path) {
-    var num = (path[pos][0] + path[pos][1] * boardSize);
-    var tile = document.getElementById("board-" + id + "tile-" + num);
-    if (tile) {
-      tile.className = 'tile ' + color;
-    }
-    allMap[num] = true;
-  }
 }
 
 function onClickPathFind () {

@@ -4,13 +4,6 @@ body {
   padding-bottom: 50px;
 }
 
-#board {
-  display: inline-block;
-  margin: 20px 50px;
-  width: calc(9*62px);
-  padding: 0;
-}
-
 p,
 button {
   display: inline-block;
@@ -50,6 +43,43 @@ nav a, nav a:hover, nav a:active {
 
 nav a:hover{
   text-decoration: underline;
+}
+
+table {
+  width: 100%;
+}
+
+table tr td:nth-child(2n) {
+  text-align: left;
+}
+
+#board {
+  display: inline-block;
+  margin: 20px 50px;
+  width: calc(9*62px);
+  padding: 0;
+}
+
+#thisPlayerPhoto {
+  float: left;
+  height: 60px;
+  width: 60px;
+}
+
+#curPlayerPhoto {
+  float: right;
+  height: 60px;
+  width: 60px;
+  background-size: contain;
+}
+
+#playerInfo {
+  width: calc(100% - 70px);
+}
+
+#turnPlayerInfo {
+  width: calc(100% - 70px);
+  text-align: right;
 }
 
 .keyboard button {    
@@ -101,34 +131,4 @@ nav a:hover{
 
 .purple {
   background-color: purple;
-}
-
-#thisPlayerPhoto {
-  float: left;
-  height: 60px;
-  width: 60px;
-}
-
-#curPlayerPhoto {
-  float: right;
-  height: 60px;
-  width: 60px;
-  background-size: contain;
-}
-
-#playerInfo {
-  width: calc(100% - 70px);
-}
-
-#turnPlayerInfo {
-  width: calc(100% - 70px);
-  text-align: right;
-}
-
-table {
-  width: 100%;
-}
-
-table tr td:nth-child(2n) {
-  text-align: left;
 }
