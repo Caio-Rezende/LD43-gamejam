@@ -7,13 +7,14 @@
 <script type="text/javascript" src="assets/js/gameplay.js"></script>
 
 <body>
+  <audio id="maiaAudio" src="assets/audio/maia_theme[looped].ogg" loop="true"></audio>
   <form name="form">
     Board size:
     <input type="range" name="boardSize" min="9" step="2" max="51" value="9" onchange="gameSet(this.value, 'board')">
     <span id="boardSizeOutput">9</span>
   </form>
   <br />
-  <h1 title="(s,d,f,e) ou (&LeftArrow;,&DownArrow;,&RightArrow;,&UpArrow;)">Use your keyboard*</h1>
+  <div id="curPlayerPhoto"></div>
   <h2 id="turnPlayerInfo"></h2>
   <br />
   <div id="board"></div>
@@ -23,7 +24,10 @@
     <button type="button" onclick="gameCycle({keyCode: 83})">&LeftArrow;</button>
     <button type="button" onclick="gameCycle({keyCode: 68})">&DownArrow;</button>
     <button type="button" onclick="gameCycle({keyCode: 70})">&RightArrow;</button>
+    <h4 title="(s,d,f,e) ou (&LeftArrow;,&DownArrow;,&RightArrow;,&UpArrow;)">You can also use your keyboard*</h4>
   </div>
+  <br/>
+  <button type="button" onclick="toggleAudio()">ToggleAudio</button>
   <br style="clear: both" />
   <nav>
     <li><a href="pages/pathfinder.html">Pathfinder</a></li>

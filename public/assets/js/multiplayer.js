@@ -103,6 +103,11 @@ function checkGameStart() {
     }
     curPlayer = (turn % 4);
     gameStart = true;
+
+    var maiaAudio = document.getElementById('maiaAudio');
+    if (maiaAudio && maiaAudio.src) {
+      maiaAudio.play();
+    }
   }
 
   updateTurnPlayerInfo();
@@ -392,5 +397,29 @@ function gameCycle (evt) {
       players : players,
       holes : holes
     });
+  }
+  if (evt.preventDefault) evt.preventDefault();
+
+  return false;
+}
+
+var isAudio = true;
+var audioSrc = null;
+function toggleAudio () {
+  var maiaAudio = document.getElementById('maiaAudio');
+  if (!audioSrc) {
+    audioSrc = maiaAudio.src;
+  }
+  if (maiaAudio) {
+    if (isAudio) {
+      maiaAudio.pause();
+      maiaAudio.currentTime = 0;
+      maiaAudio.src = '';
+    } else {
+      maiaAudio.src = audioSrc;
+      maiaAudio.load();
+      maiaAudio.play();
+    }
+    isAudio = !isAudio;
   }
 }

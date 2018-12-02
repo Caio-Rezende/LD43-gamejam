@@ -10,6 +10,7 @@
 <script type="text/javascript" src="../assets/js/multiplayer.js"></script>
 
 <body>
+  <audio id="maiaAudio" src="../assets/audio/maia_theme[looped].ogg" autoplay="false" loop="true"></audio>
   <form name="player">
     <table>
       <tr>
@@ -42,7 +43,9 @@
     </div>
     <br/>
     <h3 id="participants"></h3>
-    <h4 title="(s,d,f,e) ou (&LeftArrow;,&DownArrow;,&RightArrow;,&UpArrow;)">Use your keyboard*</h4>
+    <h4 title="(s,d,f,e) ou (&LeftArrow;,&DownArrow;,&RightArrow;,&UpArrow;)">You can also use your keyboard*</h4>
+    <br/>
+    <button type="button" onclick="toggleAudio()">ToggleAudio</button>
   </div>
   <br style="clear: both" />
   <nav>

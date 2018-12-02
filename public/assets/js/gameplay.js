@@ -184,6 +184,13 @@ function checkWinCondition(player) {
 
 function updateTurnPlayerInfo() {
   var player = players[curPlayer];
+
+  var curPlayerPhoto = document.getElementById('curPlayerPhoto');
+  if (curPlayerPhoto) {
+    curPlayerPhoto.className = player.color;
+    curPlayerPhoto.style.border = '3px solid ' + player.color;
+  }
+
   var turnPlayerInfo = document.getElementById('turnPlayerInfo');
   if (turnPlayerInfo) {
     turnPlayerInfo.style.color = player.color;
@@ -212,5 +219,34 @@ function gameCycle (evt) {
     turn++;
     curPlayer = (turn % 4);
     updateTurnPlayerInfo();
+  }
+
+  var maiaAudio = document.getElementById('maiaAudio');
+  if (maiaAudio && maiaAudio.src) {
+    maiaAudio.play();
+  }
+  if (evt.preventDefault) evt.preventDefault();
+
+  return false;
+}
+
+var isAudio = true;
+var audioSrc = null;
+function toggleAudio () {
+  var maiaAudio = document.getElementById('maiaAudio');
+  if (!audioSrc) {
+    audioSrc = maiaAudio.src;
+  }
+  if (maiaAudio) {
+    if (isAudio) {
+      maiaAudio.pause();
+      maiaAudio.currentTime = 0;
+      maiaAudio.src = '';
+    } else {
+      maiaAudio.src = audioSrc;
+      maiaAudio.load();
+      maiaAudio.play();
+    }
+    isAudio = !isAudio;
   }
 }
