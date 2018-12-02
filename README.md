@@ -5,6 +5,8 @@ Equipe: Caio Rezende, Gustavo Christino, Sammy Azar, Thiago Bastos, Thiago Perei
 
 This project has an html 2d simulator in ./public and the unity 3d game in ./Maze...
 
+The html is also hosted in https://ld43-gamejam.firebaseapp.com
+
 Unity
 - Cenário (tiles)
 	- [x] 9x9
