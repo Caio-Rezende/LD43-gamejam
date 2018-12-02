@@ -76,6 +76,9 @@ function updateConfig (config) {
 
 function checkGameStart() {
   var allNames = JSON.parse(JSON.stringify(visitors));
+  if (!allNames) {
+    allNames = [];
+  }
   if (players && players.length == 4) {
     document.getElementById('board').innerHTML = '';
     createBoard('board', boardSize);
@@ -100,8 +103,9 @@ function checkGameStart() {
     }
     curPlayer = (turn % 4);
     gameStart = true;
+
+    updateTurnPlayerInfo();
   }
-  updateTurnPlayerInfo();
 
   var participants = document.getElementById('participants');
   if (participants) {
@@ -136,6 +140,10 @@ function setPlayer(val) {
     players.push(thisPlayer);
     ref.child(sessionName).child('players').update(players);
     displayPlayerInfo();
+  
+    if (players && config.players && players.length != config.players.length && config.players.length == 4) {
+      alert('Welcome to the game!! The first to the maze may get the prize... But sacrificies, must be made.');
+    }
   } else {
     thisPlayer = {
       id: -1,
@@ -218,7 +226,7 @@ function paintTile(pos, boardSize, color) {
   var num = pos[0] + pos[1] * boardSize;
   var pTile = document.getElementById("board-tile-" + num);
   if (pTile) {
-    pTile.style.backgroundColor = color;
+    pTile.className = 'tile ' + color;
   }
 }
 
@@ -334,9 +342,9 @@ function updateTurnPlayerInfo() {
       msg = 'Aguardando jogadores (' + players.length + '/4)';
     } else {
       if (endState) {
-        msg = 'Turn: ' + (turn + 1) + ', WINNER: ' + player.color + '!!!';
+        msg = 'Turn: ' + (turn + 1) + ', WINNER: ' + player.name + '!!!';
       } else {
-        msg = 'Turn: ' + (turn + 1) + ', Color: ' + player.color;
+        msg = 'Turn: ' + (turn + 1) + ', Player: ' + player.name + ' (' + player.color + ')';
       }
     }
     if (visitors.length > 0) {
@@ -356,7 +364,8 @@ function gameCycle (evt) {
     if (checkCurPos(player)) {
       if (checkWinCondition(player)) {
         ref.child(sessionName).update({
-          players : players
+          players : players,
+          endState : endState
         });
         return;
       }

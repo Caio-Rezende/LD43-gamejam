@@ -1,5 +1,10 @@
 var pathsFound = [];
 function pathFinder(boardSize) {
+  var square = boardSize * boardSize;
+  allMap.length = [];
+  for (var i = 0; i < square; i++) {
+    allMap.push(false);
+  }
   pathsFound = [];
   updatePlayersDefault(boardSize);
   for (var p in playersDefault) {
@@ -16,6 +21,8 @@ function pathFinder(boardSize) {
   return true;
 }
 
+var allMap = [];
+
 function createFoundPaths (boardSize) {
   var pathFinderOutput = document.getElementById('pathfinderOutput');
   pathFinderOutput.innerHTML = 'Processando...';
@@ -31,21 +38,37 @@ function createFoundPaths (boardSize) {
       + "'/>";
     pathFinderOutput.appendChild(li);
     if (isNaN(parseInt(pathsFound[p], 10))) continue;
-    createBoard('board-' + p, boardSize, null, true);
+    createBoard('board-' + p, boardSize);
     displayPath(p + '-', pathsFound[p]);
   }
+  pathFinderOutput.innerHTML = '';
+
+  var li = document.createElement('li');
+  pathFinderOutput.appendChild(li);
+  li.innerHTML = "<div id='board-allMap'/>";
+  createBoard('board-allMap', boardSize);
+  var square = boardSize * boardSize;
+  for (var i = 0; i < square; i++) {
+    if (!allMap[i]) {
+      allMap[i] = parseInt(Math.random() * 10, 10) % 4 ? false : true;
+    }
+    var tile = document.getElementById("board-allMap-tile-" + i);
+    if (tile) {
+      if (allMap[i]) {
+        tile.className = 'tile white';
+      } else {
+        tile.className = 'tile black';
+      }
+    }
+  }
+  li.innerHTML += "[" + allMap.join(', ') + "]";
+
   return true;
 }
 
 function fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, iteration) {
   //verificando se pode descer x
-  if (lastX > 0
-    && (
-      firstX == half
-      || ((lastX - 1 < half) && firstX < half)
-      || ((lastX > half) && firstX > half)
-    )
-  ) {
+  if (testLimits(lastX - 1, lastY, boardSize)) {
     return testPos([lastX - 1, lastY], path, boardSize, min, iteration);
   }
   return false;
@@ -53,13 +76,7 @@ function fnLeftX(lastX, lastY, firstX, half, path, boardSize, min, iteration) {
 
 function fnRightX(lastX, lastY, firstX, half, path, boardSize, min, iteration) {
   //verificando se pode subir x
-  if (lastX < boardSize - 1
-    && (
-      firstX == half
-      || ((lastX + 1 < half) && firstX < half)
-      || ((lastX > half) && firstX > half)
-    )
-  ) {
+  if (testLimits(lastX + 1, lastY, boardSize)) {
     return testPos([lastX + 1, lastY], path, boardSize, min, iteration);
   }
   return false;
@@ -67,13 +84,7 @@ function fnRightX(lastX, lastY, firstX, half, path, boardSize, min, iteration) {
 
 function fnTopY(lastX, lastY, firstY, half, path, boardSize, min, iteration) {
   //verificando se pode subir y
-  if (lastY < boardSize - 1
-    && (
-      firstY == half
-      || ((lastY + 1 < half) && firstY < half)
-      || ((lastY > half) && firstY > half)
-    )
-  ) {
+  if (testLimits(lastX, lastY + 1, boardSize)) {
     return testPos([lastX, lastY + 1], path, boardSize, min, iteration);
   }
   return false;
@@ -81,22 +92,23 @@ function fnTopY(lastX, lastY, firstY, half, path, boardSize, min, iteration) {
 
 function fnBottomY(lastX, lastY, firstY, half, path, boardSize, min, iteration) {
   //verificando se pode descer y
-  if (lastY > 0
-    && (
-      firstY == half
-      || ((lastY - 1 < half) && firstY < half)
-      || ((lastY > half) && firstY > half)
-    )
-  ) {
+  if (testLimits(lastX, lastY - 1, boardSize)) {
     return testPos([lastX, lastY - 1], path, boardSize, min, iteration);
   }
   return false;
 }
 
+function testLimits (x, y, boardSize) {
+  if (x < 0 || y < 0 || x >= boardSize || y >= boardSize) {
+    return false;
+  }
+  return true;
+}
+
 //pathfinderOutput
 function iterateFinder(path, boardSize, min, iteration) {
   //Limite de execução
-  if (iteration > 2.5 * min) return;
+  if (iteration > 2 * min) return;
   
   var lastPos = path[path.length - 1];
   var firstPos = path[path.length - 1];
@@ -219,6 +231,8 @@ function hasAdjacent(path, pos) {
   var isBottomAdjacent = (!equalPath(path[path.length - 1], checkBottom) && checkInPath(path, checkBottom));
   var isLeftAdjacent = (!equalPath(path[path.length - 1], checkLeft) && checkInPath(path, checkLeft));
 
+  var isAdjacent = isTopAdjacent || isRightAdjacent || isBottomAdjacent || isLeftAdjacent;
+
   var tf = false;
   for (var p in playersDefault) {
     var intP = parseInt(p, 10);
@@ -229,8 +243,8 @@ function hasAdjacent(path, pos) {
     var isLeftBad = (equalPath(playersDefault[p].pos, checkLeft) && !equalPath(path[0], checkLeft));
     tf = tf || isTopBad || isRightBad || isBottomBad || isLeftBad;
   }
-
-  if (isTopAdjacent || isRightAdjacent || isBottomAdjacent || isLeftAdjacent || tf) {
+  
+  if (tf || isAdjacent) {
     return true;
   }
   return false;
@@ -239,21 +253,8 @@ function hasAdjacent(path, pos) {
 //Verificando se pos é condição de vitória
 function isBullsEye(first, pos, boardSize) {
   var half = parseInt(boardSize / 2, 10);
-  if (pos[0] == half && first[0] == half) {
-    if ((pos[1] == half - 1) && (first[1] < half)) {
-      return true;
-    }
-    if ((pos[1] == half + 1) && (first[1] > half)) {
-      return true;
-    }
-  }
-  if (pos[1] == half && first[1] == half) {
-    if ((pos[0] == half - 1) && (first[0] < half)) {
-      return true;
-    }
-    if ((pos[0] == half + 1) && (first[0] > half)) {
-      return true;
-    }
+  if (equalPath([half, half], pos)) {
+    return true;
   }
   return false;
 }
@@ -271,10 +272,12 @@ function displayPath(id, path) {
 
   var boardSize = parseInt(document.forms['form'].boardSize.value, 10);
   for (var pos in path) {
-    var tile = document.getElementById("board-" + id + "tile-" + (path[pos][0] + path[pos][1] * boardSize));
+    var num = (path[pos][0] + path[pos][1] * boardSize);
+    var tile = document.getElementById("board-" + id + "tile-" + num);
     if (tile) {
-      tile.style.backgroundColor = color;
+      tile.className = 'tile ' + color;
     }
+    allMap[num] = true;
   }
 }
 

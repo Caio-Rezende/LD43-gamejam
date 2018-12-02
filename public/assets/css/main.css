@@ -7,14 +7,8 @@ body {
 #board {
   display: inline-block;
   margin: 20px 50px;
-  width: calc(9*42px);
-}
-
-.tile {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  border: 1px solid black;
+  width: calc(9*62px);
+  padding: 0;
 }
 
 p,
@@ -64,4 +58,47 @@ nav a:hover{
   margin: 2px;
   font-size: 1.2em;
   font-weight: bold;
+}
+
+.tile {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  border: 1px solid black;
+  background-size: contain;
+  margin: 0;
+}
+
+.white {
+  background-image: url("../img/grama_chao.png");
+}
+
+.black {
+  background-color: black;
+}
+
+.gold {
+  background-color: gold;
+}
+
+.red {
+  background-image: url("../img/shamansembase.png"), url("../img/grama_chao.png");
+  background-repeat: no-repeat;
+  background-position-x: 10px, 0;
+}
+
+.blue {
+  background-image: url("../img/guerreirosembase.png"), url("../img/grama_chao.png");
+  background-repeat: no-repeat;
+  background-position-x: 10px, 0;
+}
+
+.green {
+  background-image: url("../img/lhamasembase.png"), url("../img/grama_chao.png");
+  background-repeat: no-repeat;
+  background-position-x: 10px, 0;
+}
+
+.purple {
+  background-color: purple;
 }

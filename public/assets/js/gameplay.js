@@ -77,7 +77,7 @@ function paintTile(pos, boardSize, color) {
   var num = pos[0] + pos[1] * boardSize;
   var pTile = document.getElementById("board-tile-" + num);
   if (pTile) {
-    pTile.style.backgroundColor = color;
+    pTile.className = 'tile ' + color;
   }
 }
 
@@ -189,9 +189,9 @@ function updateTurnPlayerInfo() {
     turnPlayerInfo.style.color = player.color;
     var msg = '';
     if (endState) {
-      msg = 'Turn: ' + (turn + 1) + ', WINNER: ' + player.color + '!!!';
+      msg = 'Turn: ' + (turn + 1) + ', WINNER: ' + mapNames[player.color] + '!!!';
     } else {
-      msg = 'Turn: ' + (turn + 1) + ', Color: ' + player.color;
+      msg = 'Turn: ' + (turn + 1) + ', icon: ' + mapNames[player.color];
     }
     turnPlayerInfo.innerText = msg;
   }

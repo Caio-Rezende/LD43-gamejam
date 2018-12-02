@@ -24,7 +24,7 @@ function gameSet(size, id) {
     var pos = player.pos;
     var num = pos[0] + pos[1] * size;
     var pTile = document.getElementById(id + "-tile-" + num);
-    pTile.style.backgroundColor = player.color;
+    pTile.className = 'tile ' + player.color;
   }
 
   return true;
@@ -38,13 +38,13 @@ function setPlayer(id) {
 //Aplica o click no tile para (des)pintar
 function changeColor() {
   if (this && this.style) {
-    if (this.style.backgroundColor != playersDefault[curColor].color) {
+    if (this.className != ('tile ' + playersDefault[curColor].color)) {
       if (!this.dataset.prevStyle) {
-        this.dataset.prevStyle = this.style.backgroundColor;
+        this.dataset.prevStyle = this.className;
       }
-      this.style.backgroundColor = playersDefault[curColor].color;
+      this.className = 'tile ' + playersDefault[curColor].color;
     } else {
-      this.style.backgroundColor = this.dataset.prevStyle;
+      this.className = this.dataset.prevStyle;
     }
   }
   update();
@@ -60,8 +60,8 @@ function update() {
 
   //verificando quais cores estão em cada quadrado
   for (tile in tiles) {
-    if (tiles[tile] && tiles[tile].style && tiles[tile].style.backgroundColor) {
-      var color = tiles[tile].style.backgroundColor;
+    if (tiles[tile] && tiles[tile].className) {
+      var color = tiles[tile].className.replace('tile ', '');
       if (!text[color]) {
         text[color] = [];
       }
