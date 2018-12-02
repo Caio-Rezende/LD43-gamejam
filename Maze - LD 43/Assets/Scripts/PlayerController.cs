@@ -8,21 +8,59 @@ public class PlayerController : MonoBehaviour {
     private bool canMove;
     private bool moving;
     private Vector3 target;
-    private GameObject block;
-
-	// Use this for initialization
+    private BlockController block;
+    public SceneController sceneController;
+    private int turn;
+    private string player;
+    private Quaternion playerQuartenion;
+    private int respawn;
+    
 	void Start () {
-        canMove = true;
+        player = gameObject.name;
+        if (player.Equals("Player1"))
+        {
+            canMove = true;
+        }
+        else
+        {
+            canMove = false;
+        }
         moving = false;
+        turn = 1;
+        playerQuartenion = transform.rotation;
+        gameObject.GetComponent<Rigidbody>().freezeRotation = true;
+        respawn = 0;
 	}
 	
-	// Update is called once per frame
 	void Update () {
+        checkTurn();
         checkMovement();
         movePlayer();
         respawnPlayer();
-
     }
+
+    void checkTurn()
+    {
+        if (!moving && transform.position.y == 0.6f)
+        {
+            turn = sceneController.turn;
+            if (player.Equals("Player1") && turn == 1)
+            {
+                canMove = true;
+            }
+            else if (player.Equals("Player2") && turn == 2)
+            {
+                canMove = true;
+            }
+            else
+            {
+                canMove = false;
+            }
+        }
+        
+    }
+
+
 
     void checkMovement()
     {
@@ -33,7 +71,6 @@ public class PlayerController : MonoBehaviour {
                 canMove = false;
                 moving = true;
                 target = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1);
-                //gameObject.GetComponent<Rigidbody>().isKinematic = true;
                 gameObject.GetComponent<Rigidbody>().useGravity = false;
                 return;
             }
@@ -42,7 +79,6 @@ public class PlayerController : MonoBehaviour {
                 canMove = false;
                 moving = true;
                 target = new Vector3(transform.position.x, transform.position.y, transform.position.z - 1);
-                //gameObject.GetComponent<Rigidbody>().isKinematic = true;
                 gameObject.GetComponent<Rigidbody>().useGravity = false;
                 return;
             }
@@ -51,7 +87,6 @@ public class PlayerController : MonoBehaviour {
                 canMove = false;
                 moving = true;
                 target = new Vector3(transform.position.x + 1, transform.position.y, transform.position.z);
-                //gameObject.GetComponent<Rigidbody>().isKinematic = true;
                 gameObject.GetComponent<Rigidbody>().useGravity = false;
                 return;
             }
@@ -60,10 +95,9 @@ public class PlayerController : MonoBehaviour {
                 canMove = false;
                 moving = true;
                 target = new Vector3(transform.position.x - 1, transform.position.y, transform.position.z);
-                //gameObject.GetComponent<Rigidbody>().isKinematic = true;
                 gameObject.GetComponent<Rigidbody>().useGravity = false;
                 return;
-            }
+            } 
         }
     }
 
@@ -75,45 +109,77 @@ public class PlayerController : MonoBehaviour {
             transform.position = Vector3.MoveTowards(transform.position, target, step);
             if (transform.position.Equals(target))
             {
-                moving = false;
-                canMove = true;
-                //gameObject.GetComponent<Rigidbody>().isKinematic = false;
+                moving = false; 
                 gameObject.GetComponent<Rigidbody>().useGravity = true;
-                block.GetComponent<BlockController>().hasPlayer = true;
+                gameObject.transform.rotation = playerQuartenion;
+                sceneController.changeTurn();
             }
         }
     }
 
     void respawnPlayer()
     {
-        if (gameObject.GetComponent<Transform>().position.y < -10)
+        if (gameObject.GetComponent<Transform>().position.y < -5 || respawn == 1)
         {
+            respawn = 0;
+            Label:
             string respawnBlockName = "";
             int num = Random.Range(1, 5);
             switch (num)
             {
                 case 1:
-                    respawnBlockName = "Block" + 04;
-                    Debug.Log("aaaaaa");
+                    if (GameObject.Find("Block04").GetComponent<BlockController>().hasPlayer)
+                    {
+                        goto Label;
+                    }
+                    respawnBlockName = "Block04";
                     break;
                 case 2:
-                    respawnBlockName = "Block" + 84;
+                    if (GameObject.Find("Block84").GetComponent<BlockController>().hasPlayer)
+                    {
+                        goto Label;
+                    }
+                    respawnBlockName = "Block84";
                     break;
                 case 3:
-                    respawnBlockName = "Block" + 48;
+                    if (GameObject.Find("Block48").GetComponent<BlockController>().hasPlayer)
+                    {
+                        goto Label;
+                    }
+                    respawnBlockName = "Block48";
                     break;
                 case 4:
-                    respawnBlockName = "Block" + 40;
+                    if (GameObject.Find("Block40").GetComponent<BlockController>().hasPlayer)
+                    {
+                        goto Label;
+                    }
+                    respawnBlockName = "Block40";
                     break;
             }
 
             Vector3 blockPos = GameObject.Find(respawnBlockName).transform.position;
-            transform.position = new Vector3(blockPos.x, 0.16f, blockPos.z);
+            transform.position = new Vector3(blockPos.x, 0.85f, blockPos.z);
+            gameObject.transform.rotation = playerQuartenion;
         }
     }
 
     void OnCollisionEnter(Collision col)
     {
-        block = col.gameObject;
+        if (col.gameObject.name.Equals("Player1") || col.gameObject.name.Equals("Player2"))
+        {
+            if(gameObject.name.Equals("Player1") && turn == 2)
+            {
+                respawn = 1;
+                col.gameObject.GetComponent<PlayerController>().respawnPlayer();
+            }
+            if (gameObject.name.Equals("Player2") && turn == 1)
+            {
+                respawn = 1;
+                col.gameObject.GetComponent<PlayerController>().respawnPlayer();
+            }
+
+        }
     }
+
+   
 }

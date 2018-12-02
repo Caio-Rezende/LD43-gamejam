@@ -7,12 +7,14 @@ public class BlockController : MonoBehaviour {
     public bool isSolidBlock = true;
     public bool hasPlayer = false;
     public bool fall;
-    public int[] blockPosion;
+    public int[] blockPosition;
+
+    private GameObject player;
 
     // Use this for initialization
     void Start ()
     {
-        blockPosion = new int[2];
+        blockPosition = new int[2];
         getBlockPosition();
 	}
 	
@@ -28,8 +30,8 @@ public class BlockController : MonoBehaviour {
         string nome = gameObject.name;
         int lin = int.Parse(nome.Substring(nome.Length - 2, 1));
         int col = int.Parse(nome.Substring(nome.Length - 1));
-        blockPosion[0] = lin;
-        blockPosion[1] = col;
+        blockPosition[0] = lin;
+        blockPosition[1] = col;
     }
 
     void checkPlayer()
@@ -55,9 +57,22 @@ public class BlockController : MonoBehaviour {
         }
     }
 
-    IEnumerator timer(float seconds)
+    void OnCollisionEnter(Collision col)
     {
-        yield return new WaitForSeconds(seconds);
+        if (col.gameObject.name.Equals("Player1") || col.gameObject.name.Equals("Player2"))
+        {
+            hasPlayer = true;
+            player = col.gameObject;
+        }
+    }
+
+    void OnCollisionExit(Collision col)
+    {
+        if (col.gameObject.name.Equals("Player1") || col.gameObject.name.Equals("Player2"))
+        {
+            hasPlayer = false;
+            player = null;
+        }
     }
 
 }
