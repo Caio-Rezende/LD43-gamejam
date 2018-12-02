@@ -102,3 +102,33 @@ nav a:hover{
 .purple {
   background-color: purple;
 }
+
+#thisPlayerPhoto {
+  float: left;
+  height: 60px;
+  width: 60px;
+}
+
+#curPlayerPhoto {
+  float: right;
+  height: 60px;
+  width: 60px;
+  background-size: contain;
+}
+
+#playerInfo {
+  width: calc(100% - 70px);
+}
+
+#turnPlayerInfo {
+  width: calc(100% - 70px);
+  text-align: right;
+}
+
+table {
+  width: 100%;
+}
+
+table tr td:nth-child(2n) {
+  text-align: left;
+}

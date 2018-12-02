@@ -11,14 +11,24 @@
 
 <body>
   <form name="player">
-    Choose a session:
-    <input type="text" name="session" onchange="setSession(this.value)">
-    <br />
-    Inform your player name:
-    <input type="text" name="name" onchange="setPlayer(this.value)" disabled="true">
+    <table>
+      <tr>
+        <td>Choose a session:</td>
+        <td><input type="text" name="session" onchange="setSession(this.value)"></td>
+      </tr>
+      <tr>
+        <td><br/></td>
+        <td id="sessionInfo"></td>
+      </tr>
+      <tr>
+        <td>Inform your player name:</td>
+        <td><input type="text" name="name" onchange="setPlayer(this.value)" disabled="true"></td>
+      </tr>
+    </table>
   </form>
   <div id="inGame" style="display: none">
-    <h1 title="(s,d,f,e) ou (&LeftArrow;,&DownArrow;,&RightArrow;,&UpArrow;)">Use your keyboard*</h1>
+    <div id="thisPlayerPhoto"></div>
+    <div id="curPlayerPhoto"></div>
     <h2 id="playerInfo"></h2>
     <h2 id="turnPlayerInfo"></h2>
     <br />
@@ -32,6 +42,7 @@
     </div>
     <br/>
     <h3 id="participants"></h3>
+    <h4 title="(s,d,f,e) ou (&LeftArrow;,&DownArrow;,&RightArrow;,&UpArrow;)">Use your keyboard*</h4>
   </div>
   <br style="clear: both" />
   <nav>

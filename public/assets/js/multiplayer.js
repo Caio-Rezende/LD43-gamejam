@@ -103,13 +103,18 @@ function checkGameStart() {
     }
     curPlayer = (turn % 4);
     gameStart = true;
-
-    updateTurnPlayerInfo();
   }
+
+  updateTurnPlayerInfo();
 
   var participants = document.getElementById('participants');
   if (participants) {
     participants.innerText = allNames.join(', ');
+  }
+
+  var sessionInfo = document.getElementById('sessionInfo');
+  if (sessionInfo) {
+    sessionInfo.innerText = 'Turn: ' + turn + '; Game Over: ' + (endState ? 'true' : 'false');
   }
 }
 
@@ -140,10 +145,7 @@ function setPlayer(val) {
     players.push(thisPlayer);
     ref.child(sessionName).child('players').update(players);
     displayPlayerInfo();
-  
-    if (players && config.players && players.length != config.players.length && config.players.length == 4) {
-      alert('Welcome to the game!! The first to the maze may get the prize... But sacrificies, must be made.');
-    }
+    alert('Welcome to the game!! The first to the maze may get the prize... But sacrificies, must be made.');
   } else {
     thisPlayer = {
       id: -1,
@@ -168,6 +170,12 @@ function displayPlayerInfo () {
     } else {
       playerInfo.innerText = thisPlayer.name + ', you are a visitor'
     }
+  }
+  
+  var thisPlayerPhoto = document.getElementById('thisPlayerPhoto');
+  if (thisPlayerPhoto && thisPlayer) {
+    thisPlayerPhoto.className = thisPlayer.color;
+    thisPlayerPhoto.style.background = '3px solid ' + thisPlayer.color;
   }
 }
 
@@ -334,17 +342,22 @@ function checkWinCondition(player) {
 
 function updateTurnPlayerInfo() {
   var player = players[curPlayer];
+  var curPlayerPhoto = document.getElementById('curPlayerPhoto');
+  if (curPlayerPhoto && gameStart) {
+    curPlayerPhoto.className = player.color;
+    curPlayerPhoto.style.border = '3px solid ' + player.color;
+  }
   var turnPlayerInfo = document.getElementById('turnPlayerInfo');
   if (turnPlayerInfo) {
     turnPlayerInfo.style.color = player.color;
     var msg = '';
     if (!gameStart) {
-      msg = 'Aguardando jogadores (' + players.length + '/4)';
+      msg = 'Waiting players to connect (' + players.length + '/4)';
     } else {
       if (endState) {
         msg = 'Turn: ' + (turn + 1) + ', WINNER: ' + player.name + '!!!';
       } else {
-        msg = 'Turn: ' + (turn + 1) + ', Player: ' + player.name + ' (' + player.color + ')';
+        msg = 'Turn: ' + (turn + 1) + ', Player: ' + player.name;
       }
     }
     if (visitors.length > 0) {
