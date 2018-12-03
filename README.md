@@ -17,7 +17,7 @@ Unity
 	- [x] Posicionar pixelart sobre um tablado
 - HUD
 	- [ ] Tempo (total e da rodada)
-	- [ ] Score
+	- [x] Score
 	- [ ] Nicks
 
 - Arte (Pixelart) M/F
@@ -25,17 +25,17 @@ Unity
 	- [x] Shaman
 	- [x] Guerreiro
 	- [ ] Camponês
-	- [ ] Cenário (4 modelos tile)
+	- [x] Cenário (4 modelos tile)
 
 - Som/Música
-	- [ ] 3 tipos de som por personagem (total 12)
+	- [x] 3 tipos de som por personagem (total 12)
 	- [x] Música de fundo (peruana, flauta). Pelo menos dois ritmos (calmo e frenético)
-	- [ ] Som de sucesso
-	- [ ] Som de atenção (quando é a vez do jogador)
+	- [x] Som de sucesso
+	- [x] Som de atenção (quando é a vez do jogador)
 	
 - Mecânica
 	- [x] Seta escolhe tile no maze
-	- [ ] Contador por turno
+	- [x] Contador por turno
 	- [x] Cada jogador por turno
 	
 - Regras
