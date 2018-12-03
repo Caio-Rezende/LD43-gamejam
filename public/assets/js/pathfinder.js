@@ -30,7 +30,7 @@ function createFoundPaths (boardSize) {
   pathFinderOutput.innerHTML = '';
   for (var p in pathsFound) {
     for (var pos in pathsFound[p]) {
-      var num = (pathsFound[pos][0] + pathsFound[pos][1] * boardSize);
+      var num = (pathsFound[p][pos][0] + pathsFound[p][pos][1] * boardSize);
       allMap[num] = true;
     }
   }
