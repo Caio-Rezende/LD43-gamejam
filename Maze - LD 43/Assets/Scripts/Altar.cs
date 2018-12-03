@@ -20,17 +20,20 @@ public class Altar : MonoBehaviour {
 
     void OnTriggerEnter(Collider col)
     {
+        if(sceneController.score1 == 2 || sceneController.score2 == 2)
+        {
+            gameObject.GetComponent<Animator>().SetBool("isDead", true);
+        }
+        else
+        {
+            col.gameObject.GetComponent<PlayerController>().isDead = true;
+        }
         victory(col.gameObject.name);
     }
 
     void victory(string name)
     {
-        Time.timeScale = 0;
         int playerNum = int.Parse(name.Substring(name.Length - 1));
         sceneController.score(playerNum);
     }
-
-    
-
-
 }

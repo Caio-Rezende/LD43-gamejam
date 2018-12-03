@@ -14,14 +14,20 @@ public class SceneController : MonoBehaviour {
     public Material Grass2;
     public Material Grass3;
     public UnityEngine.UI.Text msg;
+    public UnityEngine.UI.Text msg2;
+    public UnityEngine.UI.Text msg3;
     public BlockController blockOriginal;
     public int numberOfPlayers;
     public int tableSize;
     public int turn;
-    public static int score1;
-    public static int score2;
-    public UnityEngine.UI.Text scoreTxt1;
-    public UnityEngine.UI.Text scoreTxt2;
+    public int score1;
+    public int score2;
+    public UnityEngine.UI.Image scoreWarrior0;
+    public UnityEngine.UI.Image scoreWarrior1;
+    public UnityEngine.UI.Image scoreWarrior2;
+    public UnityEngine.UI.Image scoreShaman0;
+    public UnityEngine.UI.Image scoreShaman1;
+    public UnityEngine.UI.Image scoreShaman2;
 
     void Start () {
         turn = 1;
@@ -29,7 +35,7 @@ public class SceneController : MonoBehaviour {
         if (PlayerPrefs.HasKey("player1Score"))
         {
             score1 = PlayerPrefs.GetInt("player1Score");
-            scoreTxt1.text = score1.ToString();
+            changeScoreWarrior(score1);
         }
         else
         {
@@ -38,7 +44,7 @@ public class SceneController : MonoBehaviour {
         if (PlayerPrefs.HasKey("player2Score"))
         {
             score2 = PlayerPrefs.GetInt("player2Score");
-            scoreTxt2.text = score2.ToString();
+            changeScoreShaman(score2);
         }
         else
         {
@@ -46,6 +52,9 @@ public class SceneController : MonoBehaviour {
         }
 
         generateTable(tableSize);
+        msg2.text = "Sacrifice the lhama to please your God !";
+        StartCoroutine(wait(5));
+
     }
 	
     
@@ -80,38 +89,47 @@ public class SceneController : MonoBehaviour {
         if(playerNum == 1)
         {
             score1++;
-            scoreTxt1.text = score1.ToString();
+            changeScoreWarrior(score1);
             PlayerPrefs.SetInt("player1Score", score1);
         }
         else if(playerNum == 2)
         {
             score2++;
-            scoreTxt2.text = score2.ToString();
+            changeScoreShaman(score2);
             PlayerPrefs.SetInt("player2Score", score2);
         }
         PlayerPrefs.Save();
 
         if(score1 > 2)
         {
-            msg.text = "Player 1 SACRIFICED the Lhama!";
-            Time.timeScale = 0;
+            msg3.text = "The Warrior SACRIFICED the llama!";
+            player1.GetComponent<PlayerController>().canMove = false;
+            player2.GetComponent<PlayerController>().canMove = false;
+            turn = 0;
             score1 = 0;
             score2 = 0;
-            StartCoroutine(wait(3));
+            StartCoroutine(waitAndReload(6));
+            PlayerPrefs.DeleteAll();
         }
         else if (score2 > 2)
         {
-            msg.text = "Player 2 SACRIFICED the Lhama!";
-            Time.timeScale = 0;
+            msg3.text = "The Shaman SACRIFICED the llama!";
+            player1.GetComponent<PlayerController>().canMove = false;
+            player2.GetComponent<PlayerController>().canMove = false;
+            turn = 0;
             score1 = 0;
             score2 = 0;
-            StartCoroutine(wait(3));
+            StartCoroutine(waitAndReload(6));
+            PlayerPrefs.DeleteAll();
         }
         else
         {
-            msg.text = "THE LHAMA still alive! Maybe next time! You have more experience now...";
-            Time.timeScale = 0;
-            StartCoroutine(wait(3));
+            msg.text = "THE LLAMA still alive! Maybe next time! You have more experience now...";
+            msg3.text = "YOU WAS SACRIFICED BY LLAMA!";
+            turn = 0;
+            player1.GetComponent<PlayerController>().canMove = false;
+            player2.GetComponent<PlayerController>().canMove = false;
+            StartCoroutine(waitAndReload(8));
         }
 
     }
@@ -166,15 +184,64 @@ public class SceneController : MonoBehaviour {
                 cont++;
             }
         }
-        int midPos = (size - 1) / 2;
-        player1.transform.position = new Vector3(0.0f, 0.6f, size-1);
-        player2.transform.position = new Vector3(size - 1, 0.6f, 0.0f);
+        player1.transform.position = new Vector3(0, 0.6f, 12.2f);
+        player2.transform.position = new Vector3(12, 0.6f, 0.2f);
+    }
+
+    void changeScoreWarrior(int number)
+    {
+        switch (number)
+        {
+            case 0:
+                scoreWarrior0.gameObject.SetActive(true);
+                scoreWarrior1.gameObject.SetActive(false);
+                scoreWarrior2.gameObject.SetActive(false);
+                break;
+            case 1:
+                scoreWarrior0.gameObject.SetActive(false);
+                scoreWarrior1.gameObject.SetActive(true);
+                scoreWarrior2.gameObject.SetActive(false);
+                break;
+            case 2:
+                scoreWarrior0.gameObject.SetActive(false);
+                scoreWarrior1.gameObject.SetActive(false);
+                scoreWarrior2.gameObject.SetActive(true);
+                break;
+        }
+    }
+
+    void changeScoreShaman(int number)
+    {
+        switch (number)
+        {
+            case 0:
+                scoreShaman0.gameObject.SetActive(true);
+                scoreShaman1.gameObject.SetActive(false);
+                scoreShaman2.gameObject.SetActive(false);
+                break;
+            case 1:
+                scoreShaman0.gameObject.SetActive(false);
+                scoreShaman1.gameObject.SetActive(true);
+                scoreShaman2.gameObject.SetActive(false);
+                break;
+            case 2:
+                scoreShaman0.gameObject.SetActive(false);
+                scoreShaman1.gameObject.SetActive(false);
+                scoreShaman2.gameObject.SetActive(true);
+                break;
+        }
+    }
+
+    IEnumerator waitAndReload(float seconds)
+    {
+        yield return new WaitForSecondsRealtime(seconds);
+        SceneManager.LoadScene("MainScene");
     }
 
     IEnumerator wait(float seconds)
     {
         yield return new WaitForSecondsRealtime(seconds);
-        SceneManager.LoadScene(0);
+        msg2.text = "";
     }
 
 }

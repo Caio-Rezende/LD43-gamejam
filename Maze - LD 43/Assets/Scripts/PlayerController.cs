@@ -5,17 +5,23 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
     public int speed;
-    private bool canMove;
+    public SceneController sceneController;
+    public AudioClip movementAudio;
+
+    public bool canMove;
     private bool moving;
     private Vector3 target;
     private BlockController block;
-    public SceneController sceneController;
     private int turn;
     private string player;
     private Quaternion playerQuartenion;
     private int respawn;
+    private AudioSource audioSource;
+    public bool isDead;
+    private bool stop;
     
 	void Start () {
+
         player = gameObject.name;
         if (player.Equals("Player1"))
         {
@@ -25,23 +31,37 @@ public class PlayerController : MonoBehaviour {
         {
             canMove = false;
         }
+
         moving = false;
         turn = 1;
         playerQuartenion = transform.rotation;
         gameObject.GetComponent<Rigidbody>().freezeRotation = true;
         respawn = 0;
-	}
+        audioSource = gameObject.GetComponent<AudioSource>();
+        audioSource.clip = movementAudio;
+        isDead = false;
+        stop = false;
+    }
 	
 	void Update () {
         checkTurn();
         checkMovement();
         movePlayer();
         respawnPlayer();
+        checkIsDead();
+    }
+
+    void checkIsDead()
+    {
+        if (isDead)
+        {
+            gameObject.GetComponent<Animator>().SetBool("isDead", true);
+        }
     }
 
     void checkTurn()
     {
-        if (!moving && transform.position.y == 0.6f)
+        if (!moving && transform.position.y > 0)
         {
             turn = sceneController.turn;
             if (player.Equals("Player1") && turn == 1)
@@ -59,43 +79,45 @@ public class PlayerController : MonoBehaviour {
         }
         
     }
-
-
-
+    
     void checkMovement()
     {
         if (canMove)
         {
-            if (Input.GetButtonDown("up"))
+            if ((Input.GetButtonDown("up2") && player.Equals("Player1")) || (Input.GetButtonDown("up") && player.Equals("Player2")))
             {
                 canMove = false;
                 moving = true;
                 target = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1);
                 gameObject.GetComponent<Rigidbody>().useGravity = false;
+                audioSource.Play();
                 return;
             }
-            if (Input.GetButtonDown("down"))
+            if ((Input.GetButtonDown("down2") && player.Equals("Player1")) || (Input.GetButtonDown("down") && player.Equals("Player2")))
             {
                 canMove = false;
                 moving = true;
                 target = new Vector3(transform.position.x, transform.position.y, transform.position.z - 1);
                 gameObject.GetComponent<Rigidbody>().useGravity = false;
+                audioSource.Play();
                 return;
             }
-            if (Input.GetButtonDown("right"))
+            if ((Input.GetButtonDown("right2") && player.Equals("Player1")) || (Input.GetButtonDown("right") && player.Equals("Player2")))
             {
                 canMove = false;
                 moving = true;
                 target = new Vector3(transform.position.x + 1, transform.position.y, transform.position.z);
                 gameObject.GetComponent<Rigidbody>().useGravity = false;
+                audioSource.Play();
                 return;
             }
-            if (Input.GetButtonDown("left"))
+            if ((Input.GetButtonDown("left2") && player.Equals("Player1")) || (Input.GetButtonDown("left") && player.Equals("Player2")))
             {
                 canMove = false;
                 moving = true;
                 target = new Vector3(transform.position.x - 1, transform.position.y, transform.position.z);
                 gameObject.GetComponent<Rigidbody>().useGravity = false;
+                audioSource.Play();
                 return;
             } 
         }
@@ -103,7 +125,7 @@ public class PlayerController : MonoBehaviour {
 
     void movePlayer()
     {
-        if (moving)
+        if (moving && !stop)
         {
             float step = speed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, target, step);
@@ -158,7 +180,7 @@ public class PlayerController : MonoBehaviour {
             }
 
             Vector3 blockPos = GameObject.Find(respawnBlockName).transform.position;
-            transform.position = new Vector3(blockPos.x, 0.85f, blockPos.z);
+            transform.position = new Vector3(blockPos.x, 0.7f, blockPos.z + 0.2f);
             gameObject.transform.rotation = playerQuartenion;
         }
     }
@@ -177,9 +199,14 @@ public class PlayerController : MonoBehaviour {
                 respawn = 1;
                 col.gameObject.GetComponent<PlayerController>().respawnPlayer();
             }
-
         }
     }
 
-   
+    void OnTriggerEnter(Collider col)
+    {
+        if (col.gameObject.name.Equals("Llama"))
+        {
+            stop = true;
+        }
+    }
 }

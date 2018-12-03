@@ -58,6 +58,7 @@
      <Compile Include="Assets\Scripts\Maps.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\SceneController.cs" />
+     <Compile Include="Assets\Scripts\StartGame.cs" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/Public/Documents/Unity Projects/Maze - LD 43/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>

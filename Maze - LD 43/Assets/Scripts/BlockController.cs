@@ -8,17 +8,17 @@ public class BlockController : MonoBehaviour {
     public bool hasPlayer = false;
     public bool fall;
     public int[] blockPosition;
+    public AudioClip blockAudio;
+    
+    private AudioSource audioSource;
 
-    private GameObject player;
-
-    // Use this for initialization
     void Start ()
     {
         blockPosition = new int[2];
-        //getBlockPosition();
+        audioSource = gameObject.GetComponent<AudioSource>();
+        audioSource.clip = blockAudio;
 	}
 	
-	// Update is called once per frame
 	void Update ()
     {
         checkPlayer();
@@ -42,6 +42,7 @@ public class BlockController : MonoBehaviour {
             {
                 fall = true;
                 gameObject.GetComponent<Rigidbody>().isKinematic = false;
+                audioSource.Play();
             }
         }
     }
@@ -62,7 +63,6 @@ public class BlockController : MonoBehaviour {
         if (col.gameObject.name.Equals("Player1") || col.gameObject.name.Equals("Player2"))
         {
             hasPlayer = true;
-            player = col.gameObject;
         }
     }
 
@@ -71,7 +71,6 @@ public class BlockController : MonoBehaviour {
         if (col.gameObject.name.Equals("Player1") || col.gameObject.name.Equals("Player2"))
         {
             hasPlayer = false;
-            player = null;
         }
     }
 
