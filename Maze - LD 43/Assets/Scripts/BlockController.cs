@@ -15,7 +15,7 @@ public class BlockController : MonoBehaviour {
     void Start ()
     {
         blockPosition = new int[2];
-        getBlockPosition();
+        //getBlockPosition();
 	}
 	
 	// Update is called once per frame

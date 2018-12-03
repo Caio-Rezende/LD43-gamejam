@@ -128,32 +128,32 @@ public class PlayerController : MonoBehaviour {
             switch (num)
             {
                 case 1:
-                    if (GameObject.Find("Block04").GetComponent<BlockController>().hasPlayer)
+                    if (GameObject.Find("Block120").GetComponent<BlockController>().hasPlayer)
                     {
                         goto Label;
                     }
-                    respawnBlockName = "Block04";
+                    respawnBlockName = "Block120";
                     break;
                 case 2:
-                    if (GameObject.Find("Block84").GetComponent<BlockController>().hasPlayer)
+                    if (GameObject.Find("Block1212").GetComponent<BlockController>().hasPlayer)
                     {
                         goto Label;
                     }
-                    respawnBlockName = "Block84";
+                    respawnBlockName = "Block1212";
                     break;
                 case 3:
-                    if (GameObject.Find("Block48").GetComponent<BlockController>().hasPlayer)
+                    if (GameObject.Find("Block00").GetComponent<BlockController>().hasPlayer)
                     {
                         goto Label;
                     }
-                    respawnBlockName = "Block48";
+                    respawnBlockName = "Block00";
                     break;
                 case 4:
-                    if (GameObject.Find("Block40").GetComponent<BlockController>().hasPlayer)
+                    if (GameObject.Find("Block012").GetComponent<BlockController>().hasPlayer)
                     {
                         goto Label;
                     }
-                    respawnBlockName = "Block40";
+                    respawnBlockName = "Block012";
                     break;
             }
 

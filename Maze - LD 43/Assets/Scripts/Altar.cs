@@ -5,12 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class Altar : MonoBehaviour {
 
-    public UnityEngine.UI.Text msg;
     public SceneController sceneController;
 
 	// Use this for initialization
 	void Start () {
         Time.timeScale = 1;
+        transform.position = new Vector3(6.0f, 1.0f, 5.7f);
     }
 	
 	// Update is called once per frame
@@ -25,18 +25,12 @@ public class Altar : MonoBehaviour {
 
     void victory(string name)
     {
-        msg.text = name + " Won!";
         Time.timeScale = 0;
         int playerNum = int.Parse(name.Substring(name.Length - 1));
         sceneController.score(playerNum);
-        StartCoroutine(wait(3.0f));
     }
 
-    IEnumerator wait(float seconds)
-    {
-        yield return new WaitForSecondsRealtime(seconds);
-        SceneManager.LoadScene(0);
-    }
+    
 
 
 }
